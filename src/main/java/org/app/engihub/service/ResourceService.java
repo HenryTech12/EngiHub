@@ -9,6 +9,8 @@ import org.app.engihub.mapper.FileMapper;
 import org.app.engihub.model.FileModel;
 import org.app.engihub.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,6 +62,12 @@ public class ResourceService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    public Page<FileDTO> fetchAllFiles(Pageable pageable) {
+        return resourceRepository.findAll(pageable)
+                .map(fileMapper::convertToDTO);
     }
 
 }

@@ -1,8 +1,10 @@
 package org.app.engihub.controller;
 
 import org.app.engihub.dto.FileDTO;
+import org.app.engihub.pagination.ResourcePageRequest;
 import org.app.engihub.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ public class ResourceController {
 
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private ResourcePageRequest resourcePageRequest;
 
     @PostMapping("/files/upload")
     public ResponseEntity<Map<String,Object>> createResource(@RequestBody FileDTO fileDTO, MultipartFile file) {
@@ -29,5 +33,10 @@ public class ResourceController {
     @DeleteMapping("/files/{fileId}")
     public ResponseEntity<Map<String,Object>> DeleteFileInfoByID(@PathVariable Long fileId) {
         return new ResponseEntity<>(resourceService.deleteFileById(fileId),HttpStatus.OK);
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<Page<FileDTO>> getAllResource(int pageNo, int pageSize, String sortBy) {
+        return new ResponseEntity<>(resourceService.fetchAllFiles(resourcePageRequest.pageRequest(pageNo,pageSize,sortBy)),HttpStatus.OK);
     }
 }
