@@ -31,4 +31,26 @@ public class UserService {
         log.info("user details saved to database");
         return Map.of("message", "User registered sucessfully", "userId", userModel.getId());
     }
+
+    public UserDTO fetchUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public UserDTO fetchUserByID(Long id) {
+        return userRepository.findById(id)
+                .map(userMapper::convertToDTO)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public Map<String,Object> fetchUserDetails(String email) {
+        UserDTO userDTO = fetchUserByEmail(email);
+        return Map.of("id",userDTO.getId(),"name",userDTO.getName(),"email",userDTO.getEmail(),"role",userDTO.getRole().name(),"forumPosts","");
+    }
+
+    public Map<String,Object> fetchUserDetails(Long id) {
+        UserDTO userDTO = fetchUserByID(id);
+        return Map.of("id",userDTO.getId(),"name",userDTO.getName(),"email",userDTO.getEmail(),"role",userDTO.getRole().name(),"forumPosts","");
+    }
 }

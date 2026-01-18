@@ -1,6 +1,7 @@
 package org.app.engihub.configuration;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.app.engihub.dto.UserRole;
 import org.app.engihub.filter.AuthFilter;
 import org.app.engihub.filter.JwtFilter;
 import org.app.engihub.model.UserModel;
@@ -34,7 +35,8 @@ public class SecurityConfiguration {
     private ObjectMapper objectMapper;
     @Autowired
     private JwtFilter jwtFilter;
-     
+
+
      @Bean
      public UserDetailsService userDetailsService() {
          return myUserDetailsService;
@@ -43,7 +45,7 @@ public class SecurityConfiguration {
      @Bean
      public AuthFilter authFilter(AuthenticationManager authenticationManager) {
         AuthFilter authFilter = new AuthFilter();
-        authFilter.setFilterProcessesUrl("");
+        authFilter.setFilterProcessesUrl("/users/login");
         authFilter.setAuthenticationManager(authenticationManager);
         authFilter.setAuthenticationSuccessHandler(((request, response, authentication) -> {
 
@@ -77,7 +79,9 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) {
          return httpSecurity.cors(cors -> cors.disable())
                  .csrf(csrf -> csrf.disable())
-                 .authorizeHttpRequests(requests -> requests.requestMatchers("")
+                 .authorizeHttpRequests(requests -> requests.requestMatchers("/admin/**")
+                                 .hasRole(UserRole.ADMIN.name()).
+                          requestMatchers("/user/**")
                          .permitAll().anyRequest().authenticated())
                  .addFilterAt(authFilter(authenticationManager),UsernamePasswordAuthenticationFilter.class)
                  .addFilterAfter(jwtFilter,UsernamePasswordAuthenticationFilter.class)
